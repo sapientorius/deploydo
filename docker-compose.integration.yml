@@ -1,0 +1,40 @@
+services:
+  sftp:
+    image: atmoz/sftp:alpine@sha256:81fa92512bf8ead4849f33c1c153907b86d32d77704d1c62a9c70b4316ae9e50
+    command: deploy:deploydo:::upload
+    ports:
+      - "2222:22"
+
+  ftp:
+    image: stilliard/pure-ftpd:hardened@sha256:1d15f8091b18d399178acc47559b9328c3deecca732d52df96e65303d6a8a966
+    environment:
+      PUBLICHOST: 127.0.0.1
+      FTP_USER_NAME: deploy
+      FTP_USER_PASS: deploydo
+      FTP_USER_HOME: /home/deploy
+      FTP_PASSIVE_PORTS: 30000:30009
+    ports:
+      - "2121:21"
+      - "30000-30009:30000-30009"
+
+  ftps:
+    image: stilliard/pure-ftpd:hardened@sha256:1d15f8091b18d399178acc47559b9328c3deecca732d52df96e65303d6a8a966
+    environment:
+      PUBLICHOST: 127.0.0.1
+      FTP_USER_NAME: deploy
+      FTP_USER_PASS: deploydo
+      FTP_USER_HOME: /home/deploy
+      FTP_PASSIVE_PORTS: 30100:30109
+      ADDED_FLAGS: --tls=2
+      TLS_CN: localhost
+      TLS_ORG: Deploydo integration tests
+      TLS_C: DE
+      TLS_USE_DSAPRAM: "true"
+    ports:
+      - "2122:21"
+      - "30100-30109:30100-30109"
+    volumes:
+      - ftps-tls:/etc/ssl/private
+
+volumes:
+  ftps-tls:

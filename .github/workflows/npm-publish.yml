@@ -3,6 +3,7 @@ name: Test and publish deploydo
 on:
   release:
     types: [published, edited]
+  workflow_dispatch:
 
 permissions:
   contents: read
